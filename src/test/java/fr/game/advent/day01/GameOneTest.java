@@ -11,12 +11,15 @@ public class GameOneTest {
 
 	@Test
 	public void testExemple1() {
-		Assert.assertEquals(new Integer(3), gameOne.play(Arrays.asList(1, -2, 3, 1)));
+		Assert.assertEquals(new Long(2), gameOne.play(Arrays.asList(12L)));
+		Assert.assertEquals(new Long(2), gameOne.play(Arrays.asList(14L)));
+		Assert.assertEquals(new Long(654), gameOne.play(Arrays.asList(1969L)));
+		Assert.assertEquals(new Long(33583), gameOne.play(Arrays.asList(100756L)));
 	}
 	
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Integer(474), gameOne.play());
+		Assert.assertEquals(new Long(3159380), gameOne.play());
 	}
 
 }

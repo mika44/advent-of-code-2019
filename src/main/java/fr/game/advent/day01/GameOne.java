@@ -5,7 +5,7 @@ import java.util.List;
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 
-public class GameOne extends AbstractGame<Integer, Integer> {
+public class GameOne extends AbstractGame<Long, Long> {
 	
 	/**
 	 * Nom du fichier d'inputs à lire
@@ -18,14 +18,18 @@ public class GameOne extends AbstractGame<Integer, Integer> {
 	 * Et on mappe chaque ligne vers un integer avec le constructeur new de la classe Integer.
 	 */
 	public GameOne() {
-		super(FileUtils::getListFromFile, INPUT_FILENAME, Integer::new);
+		super(FileUtils::getListFromFile, INPUT_FILENAME, Long::new);
 	}
 
 	@Override
-	public Integer play(List<Integer> listOfInputs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Long play(List<Long> listOfInputs) {
+		return listOfInputs.stream()
+				.mapToLong(this::getFuelRequiredFromMass)
+				.sum()
+				;
 	}
 
-
+	private Long getFuelRequiredFromMass(Long mass) {
+		return (mass / 3L) - 2L;
+	}
 }

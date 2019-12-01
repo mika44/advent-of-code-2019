@@ -11,32 +11,14 @@ public class GameTwoTest {
 
 	@Test
 	public void testExemple1() {
-		Assert.assertEquals(new Integer(2), gameTwo.play(Arrays.asList(1, -2, 3, 1)));
+		Assert.assertEquals(new Long(2), gameTwo.play(Arrays.asList(12L)));
+		Assert.assertEquals(new Long(966), gameTwo.play(Arrays.asList(1969L)));
+		Assert.assertEquals(new Long(50346), gameTwo.play(Arrays.asList(100756L)));
 	}
 
-	@Test
-	public void testExemple2() {
-		Assert.assertEquals(new Integer(0), gameTwo.play(Arrays.asList(1, -1)));
-	}
-
-	@Test
-	public void testExemple3() {
-		Assert.assertEquals(new Integer(10), gameTwo.play(Arrays.asList(+3, +3, +4, -2, -4)));
-	}
-
-	@Test
-	public void testExemple4() {
-		Assert.assertEquals(new Integer(5), gameTwo.play(Arrays.asList(-6, +3, +8, +5, -6)));
-	}
-
-	@Test
-	public void testExemple5() {
-		Assert.assertEquals(new Integer(14), gameTwo.play(Arrays.asList(+7, +7, -2, -7, -4)));
-	}
-	
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Integer(137041), gameTwo.play());
+		Assert.assertEquals(new Long(4736213), gameTwo.play());
 	}
 	
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 
-public class GameOneBis extends AbstractGame<Integer, Integer> implements executeOpcode1 {
+public class GameOneBis extends AbstractGame<Integer, Integer> {
 	
 	private static final String INPUT_FILENAME = "day02/input-day02-1";
 	

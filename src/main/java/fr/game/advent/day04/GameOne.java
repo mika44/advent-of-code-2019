@@ -1,5 +1,6 @@
 package fr.game.advent.day04;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -18,17 +19,37 @@ public class GameOne extends AbstractGame<Integer, Long> {
 	}
 
 	private Boolean isPassword(Integer value) {
+		List<Integer> word = new ArrayList<>();
+		for (char c : String.valueOf(value).toCharArray()) {
+			word.add(c - '0');
+		}
+		return containsAdjacentDoublon(word) && neverDecrease(word);
+	}
+		
+	
+	private boolean neverDecrease(List<Integer> word) {
+		for (int i = 1; i < word.size(); i++) {
+			if (word.get(i - 1) > word.get(i)) return false;
+		}
 		return true;
 	}
-	
+
+	private boolean containsAdjacentDoublon(List<Integer> word) {
+		for (int i = 1; i < word.size(); i++) {
+			if (word.get(i - 1) == word.get(i)) return true;
+		}
+		return false;
+	}
+
 	@Override
 	public Long play(List<Integer> listOfInputs) {
 		Integer begin = listOfInputs.get(0);
 		Integer end = listOfInputs.get(1);
 		return Stream.iterate(begin, i -> i + 1).limit(end - begin + 1)
-			.filter(this::isPassword)
-			.count()
-			;
+				.parallel()
+				.filter(this::isPassword)
+				.count()
+				;
 	}
 
 

@@ -1,6 +1,8 @@
-package fr.game.advent.day05;
+package fr.game.advent.day05.program;
 
 import java.util.List;
+
+import fr.game.advent.day05.program.instructions.Instruction;
 
 public class Program {
 
@@ -41,8 +43,7 @@ public class Program {
 		Integer lastOutput = null;
 		Instruction instructionCourante = new Instruction(memory.get(instructionPointer));
 		while (!instructionCourante.isHaltInstruction()) {
-			//System.out.println(String.format(" IP = %d - %s - Memory = %s", instructionPointer, instructionCourante, memory));
-			Integer output = instructionCourante.execute(this);
+			Integer output = instructionCourante.getExecution().apply(this);
 			if (output != null) lastOutput = output;
 			instructionCourante = new Instruction(memory.get(instructionPointer));
 		}

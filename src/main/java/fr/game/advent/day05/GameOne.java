@@ -2,6 +2,7 @@ package fr.game.advent.day05;
 
 import java.util.List;
 
+import fr.game.advent.day05.program.Program;
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 

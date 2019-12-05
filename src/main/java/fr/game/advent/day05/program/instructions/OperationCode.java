@@ -1,42 +1,43 @@
-package fr.game.advent.day05;
+package fr.game.advent.day05.program.instructions;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum OperationCode {
 	
-	ADD(1, 3),
-	MUL(2, 3),
-	READ(3, 1),
-	WRITE(4, 1),
-	JMPIT(5, 2),
-	JMPIF(6, 2),
-	LESS(7, 3),
-	EQU(8, 3),
-	HALT(99, 0);
+	ADD				( 1, 3, new ExecutionAdd()),
+	MULTIPLY		( 2, 3, new ExecutionMultiply()),
+	READ_INPUT		( 3, 1, new ExecutionReadInput()),
+	WRITE_OUTPUT	( 4, 1, new ExecutionWriteOutput()),
+	JUMP_IF_TRUE	( 5, 2, new ExecutionJumpIfTrue()),
+	JUMP_IF_FALSE	( 6, 2, new ExecutionJumpIfFalse()),
+	LESS_THAN		( 7, 3, new ExecutionLessThan()),
+	EQUALS			( 8, 3, new ExecutionEquals()),
+	HALT			(99, 0, new ExecutionHalt())
+	;
 	
 
 	private int opcode;
 	private int parameterNumber;
-	private InstructionExecution instructionExecution;
+	private Execution execution;
 	
 	private OperationCode(int opcode, int parameterNumber) {
 		this.opcode = opcode;
 		this.parameterNumber = parameterNumber;
 	}
 
-	private OperationCode(int opcode, int parameterNumber, InstructionExecution instructionExecution) {
+	private OperationCode(int opcode, int parameterNumber, Execution instructionExecution) {
 		this.opcode = opcode;
 		this.parameterNumber = parameterNumber;
-		this.instructionExecution = instructionExecution;
+		this.execution = instructionExecution;
 	}
 
 	public int getParameterNumber() {
 		return parameterNumber;
 	}
 
-	public InstructionExecution getInstructionExecution() {
-		return instructionExecution;
+	public Execution getExecution() {
+		return execution;
 	}
 
 

@@ -7,7 +7,7 @@ import fr.game.utils.FileUtils;
 
 public class GameTwo extends AbstractGame<Integer, Integer> {
 	
-	private static final String INPUT_FILENAME = "day05/input-day05-2";
+	private static final String INPUT_FILENAME = "day05/input-day05-1";
 	
 	public GameTwo() {
 		super(FileUtils::getListFromOneLineFileCommaSeparated, INPUT_FILENAME, Integer::new);

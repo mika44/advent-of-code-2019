@@ -5,5 +5,5 @@ import fr.game.advent.day05.program.Program;
 @FunctionalInterface
 public interface Execution {
 
-	public Integer execute(Program program, Integer[] parameterModes);
+	public Integer execute(Program program, Mode[] parameterModes);
 }

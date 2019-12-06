@@ -3,6 +3,7 @@ package fr.game.advent.day05.program;
 import java.util.List;
 
 import fr.game.advent.day05.program.instructions.Instruction;
+import fr.game.advent.day05.program.instructions.Mode;
 
 public class Program {
 
@@ -14,17 +15,17 @@ public class Program {
 		this.instructionPointer = 0;
 	}
 
-	private Integer readMemory(Integer position) {
+	private Integer readMemoryDirectAccess(Integer position) {
 		return memory.get(position);
 	}
 	
-	public Integer readMemoryFromIP(Integer deltaIP) {
-		return memory.get(instructionPointer + deltaIP);
+	public Integer readMemoryIPOffset(Integer offset) {
+		return memory.get(instructionPointer + offset);
 	}
 
-	public Integer readMemoryFromIPWithMode(Integer deltaIP, Integer accessMode) {
-		Integer operande = readMemoryFromIP(deltaIP);
-		return accessMode == 0 ? readMemory(operande) : operande;
+	public Integer readMemoryIPOffset(Integer offset, Mode accessMode) {
+		Integer operande = readMemoryIPOffset(offset);
+		return Mode.POSITION_MODE.equals(accessMode) ? readMemoryDirectAccess(operande) : operande;
 	}
 	
 	public void writeMemory(Integer position, Integer value) {
@@ -41,11 +42,11 @@ public class Program {
 	
 	public Integer execute() {
 		Integer lastOutput = null;
-		Instruction instructionCourante = new Instruction(memory.get(instructionPointer));
+		Instruction instructionCourante = new Instruction(readMemoryIPOffset(0));
 		while (!instructionCourante.isHaltInstruction()) {
 			Integer output = instructionCourante.getExecution().apply(this);
 			if (output != null) lastOutput = output;
-			instructionCourante = new Instruction(memory.get(instructionPointer));
+			instructionCourante = new Instruction(readMemoryIPOffset(0));
 		}
 		return lastOutput;
 	}

@@ -4,22 +4,23 @@ import java.util.Scanner;
 
 import fr.game.advent.day05.program.Program;
 
-public class ExecutionReadInput implements Execution {
+public class ExecutionReadInput extends Execution implements ExecutionInterface {
 
 	@Override
-	public Integer execute(Program program, Mode[] parameterModes) {
-		Integer operande1 = program.readMemoryIPOffset(1);
+	public Integer execute(Program program, Parameter[] parameters) {
+		Integer[] operandes = getParametersValues(program, parameters);
+		
 		System.out.print("Enter input >");
-		Integer operande2;
+		Integer input;
 		try (Scanner scanner = new Scanner(System.in) ){
-			operande2 = scanner.nextInt();
+			input = scanner.nextInt();
 		} 
 		
-		System.out.print("  READ -");
-		System.out.println(String.format(" op1=[%d] -> %d", operande1, operande2));
+//		System.out.print("  READ -");
+//		System.out.println(String.format(" op1=[%d] -> %d", operande1, operande2));
 
-		program.writeMemory(operande1, operande2);		
-		program.shiftIP(+2);
+		program.writeMemory(operandes[0], input);		
+		program.shiftIP(parameters.length + 1);
 		return null;
 	}
 

@@ -4,6 +4,8 @@ import java.util.List;
 
 import fr.game.advent.day05.program.instructions.Instruction;
 import fr.game.advent.day05.program.instructions.Mode;
+import fr.game.advent.day05.program.instructions.Parameter;
+import fr.game.advent.day05.program.instructions.ParameterUsage;
 
 public class Program {
 
@@ -15,23 +17,28 @@ public class Program {
 		this.instructionPointer = 0;
 	}
 
+	
 	private Integer readMemoryDirectAccess(Integer position) {
 		return memory.get(position);
 	}
 	
-	public Integer readMemoryIPOffset(Integer offset) {
+	private Integer readMemoryIPOffset(Integer offset) {
 		return memory.get(instructionPointer + offset);
 	}
 
-	public Integer readMemoryIPOffset(Integer offset, Mode accessMode) {
-		Integer operande = readMemoryIPOffset(offset);
-		return Mode.POSITION_MODE.equals(accessMode) ? readMemoryDirectAccess(operande) : operande;
-	}
-	
 	public void writeMemory(Integer position, Integer value) {
 		memory.set(position, value);
 	}
 
+	public Integer getParameterValue(Parameter parameter) {
+		Integer operande = readMemoryIPOffset(parameter.getOffsetIP());
+		if (Mode.IMMEDIATE_MODE.equals(parameter.getMode()) || ParameterUsage.TO_WRITE.equals(parameter.getParameterUsage())) {
+			return operande;
+		} else {
+			return readMemoryDirectAccess(operande);
+		}
+	}
+	
 	public void setIP(Integer newInstructionPointer) {
 		instructionPointer = newInstructionPointer;
 	}

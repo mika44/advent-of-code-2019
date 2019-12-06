@@ -2,18 +2,19 @@ package fr.game.advent.day05.program.instructions;
 
 import fr.game.advent.day05.program.Program;
 
-public class ExecutionWriteOutput implements Execution {
+public class ExecutionWriteOutput extends Execution implements ExecutionInterface {
 
 	@Override
-	public Integer execute(Program program, Mode[] parameterModes) {
-		Integer operande1 = program.readMemoryIPOffset(1, parameterModes[0]);
-		System.out.println(" " + operande1);		
+	public Integer execute(Program program, Parameter[] parameters) {
+		Integer[] operandes = getParametersValues(program, parameters);
+
+		System.out.println(" " + operandes[0]);		
 		
 //		System.out.print("  WRITE -");
 //		System.out.println(String.format(" op1=%s -> %d -", parameterModes[0] == 0 ? "[" + program.readMemoryIPOffset(1) + "]" : program.readMemoryIPOffset(1), operande1));
 
-		program.shiftIP(+2);
-		return operande1;
+		program.shiftIP(parameters.length + 1);
+		return operandes[0];
 	}
 
 }

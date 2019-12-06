@@ -1,37 +1,41 @@
 package fr.game.advent.day05.program.instructions;
 
+import static fr.game.advent.day05.program.instructions.ParameterUsage.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public enum Opcode {
 	
-	ADD				( 1, 3, new ExecutionAdd()),
-	MULTIPLY		( 2, 3, new ExecutionMultiply()),
-	READ_INPUT		( 3, 1, new ExecutionReadInput()),
-	WRITE_OUTPUT	( 4, 1, new ExecutionWriteOutput()),
-	JUMP_IF_TRUE	( 5, 2, new ExecutionJumpIfTrue()),
-	JUMP_IF_FALSE	( 6, 2, new ExecutionJumpIfFalse()),
-	LESS_THAN		( 7, 3, new ExecutionLessThan()),
-	EQUALS			( 8, 3, new ExecutionEquals()),
-	HALT			(99, 0, new ExecutionHalt())
+	ADD				( 1, new ExecutionAdd(), 			TO_READ, TO_READ, TO_WRITE),
+	MULTIPLY		( 2, new ExecutionMultiply(),		TO_READ, TO_READ, TO_WRITE),
+	READ_INPUT		( 3, new ExecutionReadInput(),  	TO_WRITE),
+	WRITE_OUTPUT	( 4, new ExecutionWriteOutput(),	TO_READ),
+	JUMP_IF_TRUE	( 5, new ExecutionJumpIfTrue(),  	TO_READ, TO_READ),
+	JUMP_IF_FALSE	( 6, new ExecutionJumpIfFalse(), 	TO_READ, TO_READ),
+	LESS_THAN		( 7, new ExecutionLessThan(), 		TO_READ, TO_READ, TO_READ),
+	EQUALS			( 8, new ExecutionEquals(), 		TO_READ, TO_READ, TO_READ),
+	HALT			(99, new ExecutionHalt())
 	;
 	
 
 	private int intOpcode;
-	private int parametersNumber;
-	private Execution execution;
+	private ParameterUsage[] parametersUsage;
+	private ExecutionInterface execution;
 	
-	private Opcode(int opcode, int parametersNumber, Execution execution) {
-		this.intOpcode = opcode;
-		this.parametersNumber = parametersNumber;
+	
+
+	private Opcode(int intOpcode, ExecutionInterface execution, ParameterUsage... parametersUsage) {
+		this.intOpcode = intOpcode;
+		this.parametersUsage = parametersUsage;
 		this.execution = execution;
 	}
 
-	public int getParametersNumber() {
-		return parametersNumber;
+	public ParameterUsage[] getParametersUsage() {
+		return parametersUsage;
 	}
 
-	public Execution getExecution() {
+	public ExecutionInterface getExecution() {
 		return execution;
 	}
 

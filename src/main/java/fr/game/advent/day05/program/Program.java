@@ -51,6 +51,7 @@ public class Program {
 		Integer lastOutput = null;
 		Instruction instructionCourante = new Instruction(readMemoryIPOffset(0));
 		while (!instructionCourante.isHaltInstruction()) {
+			System.out.println(instructionPointer + " -> " + instructionCourante);
 			Integer output = instructionCourante.getExecution().apply(this);
 			if (output != null) lastOutput = output;
 			instructionCourante = new Instruction(readMemoryIPOffset(0));

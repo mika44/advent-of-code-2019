@@ -10,7 +10,6 @@ public class ExecutionReadInput extends Execution implements ExecutionInterface 
 	public Integer execute(Program program, Parameter[] parameters) {
 		Integer[] operandes = getParametersValues(program, parameters);
 		
-		System.out.print("Enter input >");
 		Integer input;
 		try (Scanner scanner = new Scanner(System.in) ){
 			input = scanner.nextInt();

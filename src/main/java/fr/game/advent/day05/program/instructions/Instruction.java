@@ -21,7 +21,7 @@ public class Instruction {
 		Parameter[] resultat = new Parameter[parametersUsage.length];
 		Integer parameterModesCode = instructionCode / 100;
 		for (int i = 0; i < parametersUsage.length; i++) {
-			resultat[i] = new Parameter(parametersUsage[i], Mode.toMode(parameterModesCode % 10), i);
+			resultat[i] = new Parameter(parametersUsage[i], Mode.toMode(parameterModesCode % 10), i + 1);
 			parameterModesCode = parameterModesCode / 10;
 		}
 		return resultat;

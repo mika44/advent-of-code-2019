@@ -24,4 +24,9 @@ public class Parameter {
 	public int getOffsetIP() {
 		return offsetIP;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Parameter [parameterUsage=%s, mode=%s, offsetIP=%s]", parameterUsage, mode, offsetIP);
+	}
 }

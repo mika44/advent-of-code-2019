@@ -13,8 +13,8 @@ public enum Opcode {
 	WRITE_OUTPUT	( 4, new ExecutionWriteOutput(),	TO_READ),
 	JUMP_IF_TRUE	( 5, new ExecutionJumpIfTrue(),  	TO_READ, TO_READ),
 	JUMP_IF_FALSE	( 6, new ExecutionJumpIfFalse(), 	TO_READ, TO_READ),
-	LESS_THAN		( 7, new ExecutionLessThan(), 		TO_READ, TO_READ, TO_READ),
-	EQUALS			( 8, new ExecutionEquals(), 		TO_READ, TO_READ, TO_READ),
+	LESS_THAN		( 7, new ExecutionLessThan(), 		TO_READ, TO_READ, TO_WRITE),
+	EQUALS			( 8, new ExecutionEquals(), 		TO_READ, TO_READ, TO_WRITE),
 	HALT			(99, new ExecutionHalt())
 	;
 	

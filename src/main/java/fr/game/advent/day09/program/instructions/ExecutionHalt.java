@@ -2,12 +2,12 @@ package fr.game.advent.day09.program.instructions;
 
 import fr.game.advent.day09.program.Program;
 
-public class ExecutionHalt implements ExecutionInterface {
+public class ExecutionHalt extends Execution implements ExecutionInterface {
 
 	@Override
-	public Integer execute(Program program, Parameter[] parameters) {
+	public Long execute(Program program, Parameter[] parameters) {
 		// Do nothing
-		System.out.print("  HALT");
+		log.info("HALT");
 		return null;
 	}
 

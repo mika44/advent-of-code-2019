@@ -5,18 +5,21 @@ import fr.game.advent.day09.program.Program;
 public class ExecutionJumpIfTrue extends Execution implements ExecutionInterface {
 
 	@Override
-	public Integer execute(Program program, Parameter[] parameters) {
-		Integer[] operandes = getParametersValues(program, parameters);
+	public Long execute(Program program, Parameter[] parameters) {
+		Long[] operandes = getParametersValues(program, parameters);
 		
-//		System.out.print("  JMPIT -");
-//		System.out.print(String.format(" op1=%s -> %d -", parameterModes[0] == 0 ? "[" + program.readMemoryIPOffset(1) + "]" : program.readMemoryIPOffset(1), operande1));
-//		System.out.print(String.format(" op2=%s -> %d -", parameterModes[1] == 0 ? "[" + program.readMemoryIPOffset(2) + "]" : program.readMemoryIPOffset(2), operande2));
-//		System.out.println(" IP -> " + (operande1 != 0 ? operande2 : "IP + 3"));
+		StringBuffer sb = new StringBuffer("JIT - IP->")
+				.append(program.parameterToString(parameters[1]))
+				.append(" IF ")
+				.append(program.parameterToString(parameters[0]))
+				.append(" != 0  = ")
+				.append(operandes[0] != 0L);
+		log.info(sb.toString());
 		
-		if (operandes[0] != 0) {
+		if (operandes[0] != 0L) {
 			program.setIP(operandes[1]);
 		} else {
-			program.shiftIP(parameters.length + 1);
+			program.shiftIP(parameters.length + 1L);
 		}
 		return null;
 	}

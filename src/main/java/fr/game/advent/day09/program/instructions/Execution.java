@@ -1,8 +1,17 @@
 package fr.game.advent.day09.program.instructions;
 
+import java.util.logging.Logger;
+
 import fr.game.advent.day09.program.Program;
+import fr.game.utils.LoggerUtils;
 
 public abstract class Execution implements ExecutionInterface {
+	
+	protected Logger log;
+
+	public Execution() {
+		log = LoggerUtils.getLogger();
+	}
 	
 	protected Long[] getParametersValues(Program program, Parameter[] parameters) {
 		Long[] operandes = new Long[parameters.length];

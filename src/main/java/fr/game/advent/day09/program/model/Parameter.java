@@ -1,4 +1,4 @@
-package fr.game.advent.day09.program.instructions;
+package fr.game.advent.day09.program.model;
 
 public class Parameter {
 	

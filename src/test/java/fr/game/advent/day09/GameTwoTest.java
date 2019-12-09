@@ -14,7 +14,7 @@ public class GameTwoTest {
 	
 	@Before
 	public void initLog() {
-		LoggerUtils.setLevel(Level.INFO);
+		LoggerUtils.setLevel(Level.WARNING);
 	}
 
 

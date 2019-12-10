@@ -20,15 +20,105 @@ public class GameOneTest {
 		LoggerUtils.setLevel(Level.INFO);
 	}
 
+	private List<List<Boolean>> toSpatialMap(final String casTest) {
+		return Arrays.stream(casTest.split("\\n"))
+										.map( s -> s.chars().mapToObj(c -> c == '#').collect(Collectors.toList()) )
+										.collect(Collectors.toList());
+	}
+
 	@Test
 	public void testExemple1() {
-		List<Long> inputCodeProgram = Arrays.asList(109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99).stream().map(Long::new).collect(Collectors.toList());
-		Assert.assertEquals(new Long(0L), gameOne.play(inputCodeProgram));
+		final String casTest = 
+							".#..#\n" + 
+							".....\n" + 
+							"#####\n" + 
+							"....#\n" + 
+							"...##";
+		Assert.assertEquals(new Integer(8), gameOne.play(toSpatialMap(casTest)));
 	}
+
+	
+	@Test
+	public void testExemple2() {
+		final String casTest = 
+							"......#.#.\n" + 
+							"#..#.#....\n" + 
+							"..#######.\n" + 
+							".#.#.###..\n" + 
+							".#..#.....\n" + 
+							"..#....#.#\n" + 
+							"#..#....#.\n" + 
+							".##.#..###\n" + 
+							"##...#..#.\n" + 
+							".#....####";
+		Assert.assertEquals(new Integer(33), gameOne.play(toSpatialMap(casTest)));
+	}
+
+	
+	@Test
+	public void testExemple3() {
+		final String casTest = 
+							"#.#...#.#.\n" + 
+							".###....#.\n" + 
+							".#....#...\n" + 
+							"##.#.#.#.#\n" + 
+							"....#.#.#.\n" + 
+							".##..###.#\n" + 
+							"..#...##..\n" + 
+							"..##....##\n" + 
+							"......#...\n" + 
+							".####.###.";
+		Assert.assertEquals(new Integer(35), gameOne.play(toSpatialMap(casTest)));
+	}
+
+	
+	@Test
+	public void testExemple4() {
+		final String casTest = 
+							".#..#..###\n" + 
+							"####.###.#\n" + 
+							"....###.#.\n" + 
+							"..###.##.#\n" + 
+							"##.##.#.#.\n" + 
+							"....###..#\n" + 
+							"..#.#..#.#\n" + 
+							"#..#.#.###\n" + 
+							".##...##.#\n" + 
+							".....#.#..";
+		Assert.assertEquals(new Integer(41), gameOne.play(toSpatialMap(casTest)));
+	}
+
+	
+	@Test
+	public void testExemple5() {
+		final String casTest = 
+							".#..##.###...#######\n" + 
+							"##.############..##.\n" + 
+							".#.######.########.#\n" + 
+							".###.#######.####.#.\n" + 
+							"#####.##.#.##.###.##\n" + 
+							"..#####..#.#########\n" + 
+							"####################\n" + 
+							"#.####....###.#.#.##\n" + 
+							"##.#################\n" + 
+							"#####.##.###..####..\n" + 
+							"..######..##.#######\n" + 
+							"####.##.####...##..#\n" + 
+							".#####..#.######.###\n" + 
+							"##...#.##########...\n" + 
+							"#.##########.#######\n" + 
+							".####.#.###.###.#.##\n" + 
+							"....##.##.###..#####\n" + 
+							".#.#.###########.###\n" + 
+							"#.#.#.#####.####.###\n" + 
+							"###.##.####.##.#..##";
+		Assert.assertEquals(new Integer(210), gameOne.play(toSpatialMap(casTest)));
+	}
+
 	
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Long(0L), gameOne.play());
+		Assert.assertEquals(new Integer(214), gameOne.play());
 	}
 
 }

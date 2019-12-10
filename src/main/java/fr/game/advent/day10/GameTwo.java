@@ -28,28 +28,35 @@ public class GameTwo extends AbstractGame<List<Boolean>, Integer> {
 
 	
 	private Point getVaporized200th(List<List<Boolean>> spatialMap, Point instantMonitoringStation) {
+		// Premier point vaporisé virtuel en dehors du plan pour initialiser le process
 		Point lastVaporized = new Point(instantMonitoringStation.getX(), -1);
-		int vaporizedNumber = 0;
+		// La recherche ne se fait que sur les visibles
 		Set<Point> visibles = getVisibles(spatialMap, instantMonitoringStation);
 		Point newVisiblePoint = null;
+		int vaporizedNumber = 0;
 		while (vaporizedNumber < 200) {
 			vaporizedNumber++;
 			Point nextVaporized = getNextToVaporized(spatialMap, instantMonitoringStation, lastVaporized, visibles);
-			spatialMap.get(nextVaporized.getY()).set(nextVaporized.getX(), false);
 			System.out.println(" The " + vaporizedNumber + " asteroid to be vaporized is at " + nextVaporized);
 			lastVaporized = nextVaporized;
+			spatialMap.get(nextVaporized.getY()).set(nextVaporized.getX(), false);
 			// Suppression point vaporized des visibles
 			visibles.remove(nextVaporized);
 			// Ajout éventuel nouveau point visible en décalé 
-			if (newVisiblePoint != null) {
-				//System.out.println("Ajout point " + newVisiblePoint);
-				visibles.add(newVisiblePoint);
-			}
-			Set<Point> updateVisibles = getVisibles(spatialMap, instantMonitoringStation);
-			updateVisibles.removeAll(visibles);
-			newVisiblePoint = updateVisibles.isEmpty() ? null : updateVisibles.iterator().next();
+			if (newVisiblePoint != null) visibles.add(newVisiblePoint);
+			// Recherche éventuel nouveau point visible suite à vaporisation
+			newVisiblePoint = findEventualNewVisiblePoint(spatialMap, instantMonitoringStation, visibles);
 		}
 		return lastVaporized;
+	}
+
+	private Point findEventualNewVisiblePoint(List<List<Boolean>> spatialMap, Point instantMonitoringStation,
+			Set<Point> visibles) {
+		Point newVisiblePoint;
+		Set<Point> updateVisibles = getVisibles(spatialMap, instantMonitoringStation);
+		updateVisibles.removeAll(visibles);
+		newVisiblePoint = updateVisibles.isEmpty() ? null : updateVisibles.iterator().next();
+		return newVisiblePoint;
 	}
 
 	private Point getNextToVaporized(List<List<Boolean>> spatialMap, Point instantMonitoringStation, Point lastVaporized, Set<Point> visibles) {
@@ -69,10 +76,8 @@ public class GameTwo extends AbstractGame<List<Boolean>, Integer> {
 
 	private double angleDifference(Point center, Point pointA, Point pointB) {
 		double angleDifference =  Math.atan2(pointB.getY() - center.getY(), pointB.getX() - center.getX()) 
-								- Math.atan2(pointA.getY() - center.getY(), pointA.getX() - center.getX()) 
-								+ 2 * Math.PI;
-		while (angleDifference >= 2 * Math.PI) 
-			angleDifference = angleDifference - 2 * Math.PI;
+								- Math.atan2(pointA.getY() - center.getY(), pointA.getX() - center.getX());
+		if (angleDifference < 0) angleDifference = angleDifference + 2 * Math.PI;
 		return angleDifference;
 	}
 
@@ -87,7 +92,6 @@ public class GameTwo extends AbstractGame<List<Boolean>, Integer> {
 					Integer currentVisibleNumber = getVisibles(spatialMap, pointCourant).size();
 					if (currentVisibleNumber > maxVisible) {
 						maxVisible = currentVisibleNumber;
-						//System.out.println("max visible = " + maxVisible + " pour point " + pointCourant);
 						instantMonitoringStation = pointCourant;
 					}
 				}

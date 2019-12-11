@@ -1,9 +1,23 @@
-package fr.game.advent.day11.program.instructions;
+package fr.game.advent.day11.program.model;
 
-import static fr.game.advent.day11.program.instructions.ParameterUsage.*;
+import static fr.game.advent.day11.program.model.ParameterUsage.TO_READ;
+import static fr.game.advent.day11.program.model.ParameterUsage.TO_WRITE;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import fr.game.advent.day11.program.services.ExecutionI;
+import fr.game.advent.day11.program.services.implementation.ExecutionAdd;
+import fr.game.advent.day11.program.services.implementation.ExecutionAdjustRelativeBase;
+import fr.game.advent.day11.program.services.implementation.ExecutionEquals;
+import fr.game.advent.day11.program.services.implementation.ExecutionHalt;
+import fr.game.advent.day11.program.services.implementation.ExecutionJumpIfFalse;
+import fr.game.advent.day11.program.services.implementation.ExecutionJumpIfTrue;
+import fr.game.advent.day11.program.services.implementation.ExecutionLessThan;
+import fr.game.advent.day11.program.services.implementation.ExecutionMultiply;
+import fr.game.advent.day11.program.services.implementation.ExecutionReadInput;
+import fr.game.advent.day11.program.services.implementation.ExecutionWriteOutput;
+
 
 public enum Opcode {
 	
@@ -22,11 +36,11 @@ public enum Opcode {
 
 	private int intOpcode;
 	private ParameterUsage[] parametersUsage;
-	private ExecutionInterface execution;
+	private ExecutionI execution;
 	
 	
 
-	private Opcode(int intOpcode, ExecutionInterface execution, ParameterUsage... parametersUsage) {
+	private Opcode(int intOpcode, ExecutionI execution, ParameterUsage... parametersUsage) {
 		this.intOpcode = intOpcode;
 		this.parametersUsage = parametersUsage;
 		this.execution = execution;
@@ -36,7 +50,7 @@ public enum Opcode {
 		return parametersUsage;
 	}
 
-	public ExecutionInterface getExecution() {
+	public ExecutionI getExecution() {
 		return execution;
 	}
 

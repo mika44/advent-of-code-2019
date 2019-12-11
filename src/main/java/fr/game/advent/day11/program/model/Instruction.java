@@ -1,9 +1,6 @@
-package fr.game.advent.day11.program.instructions;
+package fr.game.advent.day11.program.model;
 
 import java.util.Arrays;
-import java.util.function.Function;
-
-import fr.game.advent.day11.program.Program;
 
 
 public class Instruction {
@@ -18,6 +15,23 @@ public class Instruction {
 		this.parameters =  buildParameters(instructionCode, this.opcode.getParametersUsage());
 	}
 	
+	public Opcode getOpcode() {
+		return opcode;
+	}
+
+	public Parameter[] getParameters() {
+		return parameters;
+	}
+
+	public boolean isHaltInstruction() {
+		return Opcode.HALT.equals(opcode);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Instruction [instructionCode=%s, opcode=%s, parameters=%s]", instructionCode, opcode, Arrays.toString(parameters));
+	}	
+	
 	private Parameter[] buildParameters(Long instructionCode, ParameterUsage[] parametersUsage) {
 		Parameter[] resultat = new Parameter[parametersUsage.length];
 		Long parameterModesCode = instructionCode / 100;
@@ -28,16 +42,5 @@ public class Instruction {
 		return resultat;
 	}
 	
-	public boolean isHaltInstruction() {
-		return Opcode.HALT.equals(opcode);
-	}
-	
-	public Function<Program, Long> getExecution() {
-		return p -> opcode.getExecution().execute(p, parameters);
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("Instruction [instructionCode=%s, opcode=%s, parameters=%s]", instructionCode, opcode, Arrays.toString(parameters));
-	}	
+
 }

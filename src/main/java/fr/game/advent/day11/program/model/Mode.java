@@ -1,4 +1,4 @@
-package fr.game.advent.day11.program.instructions;
+package fr.game.advent.day11.program.model;
 
 import java.util.HashMap;
 import java.util.Map;

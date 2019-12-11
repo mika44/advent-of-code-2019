@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import fr.game.advent.day11.program.Program;
+import fr.game.advent.day11.program.model.Program;
+import fr.game.advent.day11.program.services.ProgramServicesI;
+import fr.game.advent.day11.program.services.implementation.ProgramServices;
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 import fr.game.utils.LoggerUtils;
@@ -23,13 +25,13 @@ public class GameTwo extends AbstractGame<Long, Integer> {
 	
 	private Logger log;
 	private Set<ColoredPoint> visitedPoints;
-
+	private ProgramServicesI programServices = new ProgramServices();
 	private Thread emergencyHullPaintingRobot;
-
 	private BufferedWriter writerToRobot;
-
 	private BufferedReader readerFromRobot;
-
+	private ColoredPoint currentRobotPosition;
+	private Direction currentRobotDirection;
+	
 	public GameTwo() {
 		super(FileUtils::getListFromOneLineFileCommaSeparated, INPUT_FILENAME, Long::new);
 		this.log = LoggerUtils.getLogger();
@@ -39,32 +41,19 @@ public class GameTwo extends AbstractGame<Long, Integer> {
 	@Override
 	public Integer play(List<Long> intcodeProgram) {
 		try {
-			PipedOutputStream outputStreamToPipeRobotInputStream = new PipedOutputStream();
-			PipedInputStream inputStreamToPipeRobotOutputStream = new PipedInputStream();
-			writerToRobot = new BufferedWriter(new OutputStreamWriter(outputStreamToPipeRobotInputStream));
-			readerFromRobot = new BufferedReader(new InputStreamReader(inputStreamToPipeRobotOutputStream));
-			Program robotBrain = new Program(intcodeProgram, new PipedInputStream(outputStreamToPipeRobotInputStream), new PipedOutputStream(inputStreamToPipeRobotOutputStream));
-			emergencyHullPaintingRobot = new Thread(() -> robotBrain.execute());
+			runRobot(intcodeProgram);
 
 			visitedPoints = new HashSet<>();
-			ColoredPoint currentRobotPosition = new ColoredPoint(0, 0);
-			Direction currentRobotDirection = Direction.UP;
+			currentRobotPosition = new ColoredPoint(0, 0);
+			currentRobotDirection = Direction.UP;
 			emergencyHullPaintingRobot.start();
 
 			while (emergencyHullPaintingRobot.isAlive()) {
-				log.info("Visite du point " + currentRobotPosition);
-				visitedPoints.add(currentRobotPosition);
-				sendMessageToRobot("" + currentRobotPosition.getColor());
-				int colorToApply = readMessageFromRobot().intValue();
-				if (!emergencyHullPaintingRobot.isAlive()) break;
-				log.info("Coloration du point en " + colorToApply);
-				currentRobotPosition.setColor(colorToApply);
-				int turnDirectionToApply = readMessageFromRobot().intValue();
-				if (!emergencyHullPaintingRobot.isAlive()) break;
-				log.info("Changement direction en " + turnDirectionToApply);
-				currentRobotDirection = Direction.turn(currentRobotDirection, turnDirectionToApply);
-				currentRobotPosition = moveDirection(currentRobotPosition, currentRobotDirection);
-				visitedPoints.add(currentRobotPosition);
+				visitPointAndSendColorToRobot();
+				readNewColorToPaintAndApply();
+				if (emergencyHullPaintingRobot.isAlive()) { 
+					readTurnDirectionAndApply();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -89,6 +78,39 @@ public class GameTwo extends AbstractGame<Long, Integer> {
 		}
 	}
 
+	private void readTurnDirectionAndApply() {
+		int turnDirectionToApply = readMessageFromRobot().intValue();
+		if (emergencyHullPaintingRobot.isAlive()) {
+			log.info("Changement direction en " + turnDirectionToApply);
+			currentRobotDirection = Direction.turn(currentRobotDirection, turnDirectionToApply);
+			currentRobotPosition = moveDirection(currentRobotPosition, currentRobotDirection);
+			visitedPoints.add(currentRobotPosition);
+		}
+	}
+
+	private void readNewColorToPaintAndApply() {
+		int colorToApply = readMessageFromRobot().intValue();
+		if (emergencyHullPaintingRobot.isAlive()) {
+			log.info("Coloration du point en " + colorToApply);
+			currentRobotPosition.setColor(colorToApply);
+		}
+	}
+
+	private void visitPointAndSendColorToRobot() throws IOException {
+		log.info("Visite du point " + currentRobotPosition);
+		visitedPoints.add(currentRobotPosition);
+		sendMessageToRobot("" + currentRobotPosition.getColor());
+	}
+
+	private void runRobot(List<Long> intcodeProgram) throws IOException {
+		PipedOutputStream outputStreamToPipeRobotInputStream = new PipedOutputStream();
+		writerToRobot = new BufferedWriter(new OutputStreamWriter(outputStreamToPipeRobotInputStream));
+		PipedInputStream inputStreamToPipeRobotOutputStream = new PipedInputStream();
+		readerFromRobot = new BufferedReader(new InputStreamReader(inputStreamToPipeRobotOutputStream));
+
+		Program robotBrain = new Program(intcodeProgram, new PipedInputStream(outputStreamToPipeRobotInputStream), new PipedOutputStream(inputStreamToPipeRobotOutputStream));
+		emergencyHullPaintingRobot = new Thread(() -> programServices.execute(robotBrain));
+	}
 
 	private ColoredPoint moveDirection(ColoredPoint currentRobotPosition, Direction currentRobotDirection) {
 		int dx = currentRobotDirection.getMove().getX();

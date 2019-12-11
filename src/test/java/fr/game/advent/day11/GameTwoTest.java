@@ -20,6 +20,7 @@ public class GameTwoTest {
 	@Test
 	public void testGame() {
 		Assert.assertEquals(new Integer(250), gameTwo.play());
+		// Lettres obtenues BJRKLJUP
 	}
 
 }

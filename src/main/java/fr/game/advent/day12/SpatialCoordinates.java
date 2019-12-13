@@ -93,4 +93,9 @@ public class SpatialCoordinates {
 		List<Integer> coordinates = Arrays.stream(RegExUtils.removeAll(input, "<|>|=|x|y|z| ").split(",")).map(Integer::valueOf).collect(Collectors.toList());
 		return new SpatialCoordinates(coordinates.get(0), coordinates.get(1), coordinates.get(2));
 	}
+
+	
+	public static SpatialCoordinates cloneSpatialCoordinates(SpatialCoordinates source) {
+		return new SpatialCoordinates(source.x, source.y, source.z);
+	}
 }

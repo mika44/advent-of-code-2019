@@ -6,26 +6,14 @@ public class Axis {
 
 	private int[] moons;
 	private int[] velocities;
-	private long step;
-
-	public Axis(Axis axis) {
-		this.moons = Arrays.copyOf(axis.moons, axis.moons.length);
-		this.velocities = Arrays.copyOf(axis.velocities, axis.velocities.length);
-		this.step = axis.step;
-	}
 
 	public Axis(int c1, int c2, int c3, int c4) {
 		this.moons = new int[] { c1, c2, c3, c4 };
 		this.velocities = new int[] { 0, 0, 0, 0 };
-		this.step = 0L;
 	}
 
 	public Axis() {
 		this(0, 0, 0, 0);
-	}
-
-	public long getStep() {
-		return step;
 	}
 
 	@Override
@@ -52,15 +40,8 @@ public class Axis {
 	public void doStep() {
 		updateVelocities();
 		applyVelocities();
-		step++;
 	}
 	
-	public void doNSteps(Long numberOfSteps) {
-		for (long step = 0L; step < numberOfSteps; step++) {
-			doStep();
-		}
-	}
-
 	private void applyVelocities() {
 		for (int i = 0; i < moons.length; i++) {
 			moons[i] = moons[i] + velocities[i];

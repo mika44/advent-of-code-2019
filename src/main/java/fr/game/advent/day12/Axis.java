@@ -4,18 +4,27 @@ import java.util.Arrays;
 
 public class Axis {
 
-	private int[] moons;
-	private int[] velocities;
+	private long[] moons;
+	private long[] velocities;
 
-	public Axis(int c1, int c2, int c3, int c4) {
-		this.moons = new int[] { c1, c2, c3, c4 };
-		this.velocities = new int[] { 0, 0, 0, 0 };
+	public Axis(Axis other) {
+		this.moons = new long[] { other.moons[0], other.moons[1], other.moons[2], other.moons[3] };
+		this.velocities = new long[] { other.velocities[0], other.velocities[1], other.velocities[2], other.velocities[3]  };
+	}
+
+	public Axis(long c1, long c2, long c3, long c4) {
+		this.moons = new long[] { c1, c2, c3, c4 };
+		this.velocities = new long[] { 0L, 0L, 0L, 0L};
 	}
 
 	public Axis() {
-		this(0, 0, 0, 0);
+		this(0L, 0L, 0L, 0L);
 	}
 
+	public long getMoon(int i) {
+		return moons[i]; 
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,9 +59,9 @@ public class Axis {
 		
 	private void updateVelocities() {
 		for (int i = 0; i < moons.length; i++) {
-			int moon1 = moons[i];
+			long moon1 = moons[i];
 			for (int j = i + 1; j < moons.length; j++) {
-				int moon2 = moons[j];
+				long moon2 = moons[j];
 				if (moon1 != moon2) {
 					if (moon1 > moon2) {
 						velocities[i]--;

@@ -16,7 +16,7 @@ public class GameTwoTest {
 
 	@Before
 	public void initLog() {
-		LoggerUtils.setLevel(Level.INFO);
+		LoggerUtils.setLevel(Level.WARNING);
 	}
 
 	@Test
@@ -45,6 +45,6 @@ public class GameTwoTest {
 
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Long(0L), gameThree.play());
+		Assert.assertEquals(new Long(506359021038056L), gameThree.play());
 	}
 }

@@ -19,7 +19,7 @@ public class ExecutionMultiply extends Execution implements ExecutionI {
 				.append(parameterServices.parameterToString(parameters[2], program))
 				.append(" <- ")
 				.append(parameterServices.parameterToString(parameters[0], program))
-				.append(" + ")
+				.append(" * ")
 				.append(parameterServices.parameterToString(parameters[1], program))
 				.append(" = ")
 				.append(operandes[0] * operandes[1])

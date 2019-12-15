@@ -23,6 +23,7 @@ public class ExecutionReadInput extends Execution implements ExecutionI {
 		} 
 		
 		// Read input and add it to operandes
+		log.info("INPUT READING");
 		try {
 			String inputString = null;
 			while (inputString == null) {

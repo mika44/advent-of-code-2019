@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import fr.game.advent.day11.program.model.Program;
-import fr.game.advent.day11.program.services.ProgramServicesI;
-import fr.game.advent.day11.program.services.implementation.ProgramServices;
+import fr.game.advent.day13.program.model.Program;
+import fr.game.advent.day13.program.services.ProgramServicesI;
+import fr.game.advent.day13.program.services.implementation.ProgramServices;
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 import fr.game.utils.LoggerUtils;
@@ -28,6 +28,8 @@ public class GameOne extends AbstractGame<Long, Long> {
 
 
 	private Map<Point, TileId> tiles;
+	private Long minX, maxX;
+	private Long minY, maxY;
 	
 	@Override
 	public Long play(List<Long> intcodeProgram) {
@@ -53,10 +55,38 @@ public class GameOne extends AbstractGame<Long, Long> {
 			Long y = Long.valueOf(outputs[index + 1]);
 			TileId tileId = TileId.values()[Integer.valueOf(outputs[index + 2])];
 			Point tile = new Point(x, y);
+			if (tiles.containsKey(tile)) printTiles();
 			tiles.put(tile, tileId);
 			log.info(String.format("Tile %s -> %s", tile, tileId));
 			index = index + 3;
 		}
+		printTiles();
+	}
+
+
+	private void printTiles() {
+		if (minX == null) getMinAndMAx();
+		System.out.println("");
+		System.out.println("WIDTH  : " + (maxX - minX + 1));
+		System.out.println("HEIGHT : " + (maxY - minY + 1));
+		System.out.println("");
+		for (long y = maxY; y >= minY; y--) {
+			for (long x = minX; x <= maxX; x++) {
+				Point currentPoint = new Point(x, y);
+				TileId tileId = tiles.getOrDefault(currentPoint, TileId.EMPTY);
+				System.out.print(tileId.getRepresentation());
+			}
+			System.out.println();
+		}
+	}
+
+
+	private void getMinAndMAx() {
+		minX = tiles.keySet().stream().mapToLong(Point::getX).min().getAsLong();
+		maxX = tiles.keySet().stream().mapToLong(Point::getX).max().getAsLong();
+		
+		minY = tiles.keySet().stream().mapToLong(Point::getY).min().getAsLong();
+		maxY = tiles.keySet().stream().mapToLong(Point::getY).max().getAsLong();
 	}
 
 

@@ -1,7 +1,7 @@
 package fr.game.advent.day14;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import fr.game.utils.AbstractGame;
@@ -28,49 +28,41 @@ public class GameOne extends AbstractGame<Formule, Long> {
 		this.formules = formules;
 		Formule formuleBases = determinerFormuleComposantsDeBasePourProduireElement(new ComposantFormule("FUEL", 1));
 		log.info("Formule de base obtenue : " + formuleBases);
-		long oreNecessaire = 0L;
-		for (ComposantFormule composantBase : formuleBases.getComposants()) {
-			Formule formuleComposant = new Formule(trouverFormulesProduisantElement(composantBase));
-			log.info("Formule pour produire " + composantBase.getElement() + " -> " + formuleComposant);
-			ajusterQuantite(formuleComposant, composantBase.getQuantite());
-			oreNecessaire = oreNecessaire + formuleComposant.getComposants().get(0).getQuantite();
-			log.info("ORE pour produire " + composantBase.getQuantite() + " " + composantBase.getElement() + " -> " + formuleComposant.getComposants().get(0).getQuantite());
+		return formuleBases.getComposants().get(0).getQuantite();
+	}
+	
+	private Optional<Formule> trouverFormulesProduisantElement(ComposantFormule composant) {
+		return formules.parallelStream().filter(f -> f.getProduit().equals(composant)).findFirst();
+	}
+	
+	private int getLevel(ComposantFormule composant) {
+		Optional<Formule> formuleProduction = trouverFormulesProduisantElement(composant);
+		if (formuleProduction.isPresent()) {
+			return formuleProduction.get().getComposants().stream().mapToInt(this::getLevel).max().getAsInt() + 1;
+		} else {
+			return 0;
 		}
-		return oreNecessaire;
-	}
-	
-	private Formule trouverFormulesProduisantElement(ComposantFormule composant) {
-		return formules.parallelStream().filter(f -> f.getProduit().equals(composant)).findFirst().get();
-	}
-	
-	private boolean isComposantDeBase(ComposantFormule composant) {
-		List<ComposantFormule> composants = trouverFormulesProduisantElement(composant).getComposants();
-		return composants.size() == 1 && composants.get(0).getElement().equals("ORE");
 	}
 	
 	private Formule determinerFormuleComposantsDeBasePourProduireElement(ComposantFormule produit) {
-		log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit);
-		Formule formuleInitiale = new Formule(trouverFormulesProduisantElement(produit));
-		log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production = " + formuleInitiale);
-		ajusterQuantite(formuleInitiale, produit.getQuantite());
-		log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée = " + formuleInitiale);
-		List<Formule> formulesRemplacement = new ArrayList<>();
-		for (ComposantFormule composant : formuleInitiale.getComposants()) {
-			log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée = " + formuleInitiale + " - composant " + composant);
-			if (!isComposantDeBase(composant)) {
-				Formule formuleComposant = new Formule(determinerFormuleComposantsDeBasePourProduireElement(composant));
-				log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée = " + formuleInitiale + " - composant " + composant + " - formule composant " + formuleComposant);
+		Formule formuleCourante = new Formule(trouverFormulesProduisantElement(produit).get());
+		log.info("produit = " + produit + " - formule = " + formuleCourante);
+		boolean isMaxLevelZero = false;
+		while (!isMaxLevelZero) {
+			final int maxLevel = formuleCourante.getComposants().stream().mapToInt(this::getLevel).max().getAsInt(); 
+			isMaxLevelZero = maxLevel == 0;
+			if (!isMaxLevelZero) {
+				ComposantFormule composant = formuleCourante.getComposants().stream().filter(c -> getLevel(c) == maxLevel).findAny().get();
+				log.info("produit = " + produit + " - formule = " + formuleCourante + " - composant " + composant + " de level " + getLevel(composant));
+				Formule formuleComposant = new Formule(trouverFormulesProduisantElement(composant).get());
+				log.info("produit = " + produit + " - formule = " + formuleCourante + " - composant " + composant + " - formule composant " + formuleComposant);
 				ajusterQuantite(formuleComposant, composant.getQuantite());
-				log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée = " + formuleInitiale + " - composant " + composant + " - formule composant ajsutée " + formuleComposant);
-				formulesRemplacement.add(formuleComposant);
+				log.info("produit = " + produit + " - formule = " + formuleCourante + " - composant " + composant + " - formule composant ajustée " + formuleComposant);
+				remplacerComposant(formuleCourante, formuleComposant);
+				log.info("produit = " + produit + " - formule après remplacement = " + formuleCourante);
 			}
 		}
-		for (Formule formuleRemplacement : formulesRemplacement) {
-			log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée avant remplacement = " + formuleInitiale + " - formule remplacement " + formuleRemplacement);
-			remplacerComposant(formuleInitiale, formuleRemplacement);
-			log.info("determinerFormuleComposantsDeBasePourProduireElement produit = " + produit + " - formule production ajustée après remplacement = " + formuleInitiale + " - formule remplacement " + formuleRemplacement);
-		}
-		return formuleInitiale;
+		return formuleCourante;
 	}
 
 	private void remplacerComposant(Formule formuleInitiale, Formule formuleComposant) {
@@ -100,6 +92,5 @@ public class GameOne extends AbstractGame<Formule, Long> {
 		long coefficentAjustement = quantiteCible / quantiteFormule;
 		if (quantiteCible % quantiteFormule != 0L) coefficentAjustement++;
 		return coefficentAjustement;
-	}
-		
+	}		
 }

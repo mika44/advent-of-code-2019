@@ -116,6 +116,6 @@ public class GameOneTest {
 
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Integer(0), gameOne.play());
+		Assert.assertEquals(new Integer(502491), gameOne.play());
 	}
 }

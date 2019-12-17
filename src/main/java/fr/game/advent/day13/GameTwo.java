@@ -125,6 +125,8 @@ public class GameTwo extends AbstractGame<Long, Long> {
 					break;
 				case HORIZONTAL_PADDLE: 
 					positionPaddle = tile;
+				default:
+					break;
 				}
 			}
 			index = index + 3;

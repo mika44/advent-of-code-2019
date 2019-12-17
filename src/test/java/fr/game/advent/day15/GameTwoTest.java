@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import fr.game.utils.LoggerUtils;
 
-public class GameOneTest {
+public class GameTwoTest {
 	
-	private GameOne gameOne = new GameOne();
+	private GameTwo gameTwo = new GameTwo();
 	
 	@Before
 	public void initLog() {
@@ -19,7 +19,7 @@ public class GameOneTest {
 
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Long(252), gameOne.play());
+		Assert.assertEquals(new Long(350), gameTwo.play());
 	}
 
 }

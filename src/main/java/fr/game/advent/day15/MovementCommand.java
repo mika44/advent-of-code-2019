@@ -32,4 +32,9 @@ public enum MovementCommand {
 		}
 		return null;
 	}
+	
+	public static MovementCommand opposite(MovementCommand initialMovementCommand) {
+		return turnToLeft(turnToLeft(initialMovementCommand));
+	}
+
 }

@@ -22,7 +22,7 @@ import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 import fr.game.utils.LoggerUtils;
 
-public class GameOne extends AbstractGame<Long, Long> {
+public class GameTwo extends AbstractGame<Long, Long> {
 	
 	private static final String INPUT_FILENAME = "day15/input-day15-1";
 	
@@ -41,8 +41,9 @@ public class GameOne extends AbstractGame<Long, Long> {
 	private MovementCommand currentMovementCommand;
 	private PointStatus currentMovementResult;
 	private boolean backOnPath;
+	private long maxPathLength;
 	
-	public GameOne() {
+	public GameTwo() {
 		super(FileUtils::getListFromOneLineFileCommaSeparated, INPUT_FILENAME, Long::new);
 		this.log = LoggerUtils.getLogger();
 	}
@@ -54,29 +55,54 @@ public class GameOne extends AbstractGame<Long, Long> {
 			space = new HashMap<>();
 			runRepairDroid(intcodeProgram);
 			log.info("Repair Droid launched !");
-		
-			// loop until end of search
-			positionRepairDroid = new Point(0, 0);
-			space.put(new Point(0, 0), PointStatus.VOID);
-			pathFromOrigin = new LinkedList<>();
-			currentMovementCommand = null;
-			currentMovementResult = null;
-			backOnPath = false;
-			boolean endOfSearch = false;
-			while (!endOfSearch) {
-				currentMovementCommand = nextMove();
-				sendMessageToRepairDroid(currentMovementCommand);
-				treatResponseRepairDroid();
-				printSpace();
-				endOfSearch = currentMovementResult.equals(PointStatus.OS);
-			}
+			findOS();
+			System.out.println("OS found - fill with oxygen");
+			exploreAll();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return pathFromOrigin.size() + 1L;
+		return maxPathLength;
 	}
 
+
+	public void findOS() throws IOException {
+		positionRepairDroid = new Point(0, 0);
+		space.put(new Point(0, 0), PointStatus.VOID);
+		pathFromOrigin = new LinkedList<>();
+		currentMovementCommand = null;
+		currentMovementResult = null;
+		backOnPath = false;
+		boolean endOfSearch = false;
+		while (!endOfSearch) {
+			currentMovementCommand = nextMove();
+			sendMessageToRepairDroid(currentMovementCommand);
+			treatResponseRepairDroid();
+			//printSpace();
+			endOfSearch = currentMovementResult.equals(PointStatus.OS);
+		}
+	}
+
+	public void exploreAll() throws IOException {
+		// positionRepairDroid est sur OS
+		space = new HashMap<>();
+		space.put(new Point(positionRepairDroid.getX(), positionRepairDroid.getY()), PointStatus.OS);
+		pathFromOrigin = new LinkedList<>();
+		currentMovementCommand = null;
+		currentMovementResult = null;
+		backOnPath = false;
+		maxPathLength = -1L;
+		boolean endOfSearch = false;
+		while (!endOfSearch) {
+			currentMovementCommand = nextMove();
+			sendMessageToRepairDroid(currentMovementCommand);
+			treatResponseRepairDroid();
+			printSpace();
+			if (pathFromOrigin.size() > maxPathLength) maxPathLength = pathFromOrigin.size();
+			endOfSearch = pathFromOrigin.isEmpty() && backOnPath;
+		}
+	}
 
 	private void treatResponseRepairDroid() {
 		StatusCode statusCodeReturned = StatusCode.toStatusCode(readMessageFromRepairDroid().get(0));

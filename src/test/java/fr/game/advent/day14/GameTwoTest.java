@@ -10,40 +10,13 @@ import org.junit.Test;
 
 import fr.game.utils.LoggerUtils;
 
-public class GameOneTest {
+public class GameTwoTest {
 	
-	private GameOne gameOne = new GameOne();
+	private GameTwo gameTwo = new GameTwo();
 	
 	@BeforeClass
 	public static void initLog() {
-		LoggerUtils.setLevel(Level.INFO);
-	}
-
-	@Test
-	public void testExemple1() {
-		String casTest = 
-				"10 ORE => 10 A\n" + 
-				"1 ORE => 1 B\n" + 
-				"7 A, 1 B => 1 C\n" + 
-				"7 A, 1 C => 1 D\n" + 
-				"7 A, 1 D => 1 E\n" + 
-				"7 A, 1 E => 1 FUEL";
-		long resultatAttendu = 31;
-		executerEtVerifierResultat(casTest, resultatAttendu);
-	}
-
-	@Test
-	public void testExemple2() {
-		String casTest = 
-				"9 ORE => 2 A\n" + 
-				"8 ORE => 3 B\n" + 
-				"7 ORE => 5 C\n" + 
-				"3 A, 4 B => 1 AB\n" + 
-				"5 B, 7 C => 1 BC\n" + 
-				"4 C, 1 A => 1 CA\n" + 
-				"2 AB, 3 BC, 4 CA => 1 FUEL";
-		long resultatAttendu = 165;
-		executerEtVerifierResultat(casTest, resultatAttendu);
+		LoggerUtils.setLevel(Level.WARNING);
 	}
 
 	@Test
@@ -58,7 +31,7 @@ public class GameOneTest {
 				"7 DCFZ, 7 PSHF => 2 XJWVT\n" + 
 				"165 ORE => 2 GPVTF\n" + 
 				"3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT";
-		long resultatAttendu = 13312;
+		long resultatAttendu = 82892753;
 		executerEtVerifierResultat(casTest, resultatAttendu);
 	}
 
@@ -77,7 +50,7 @@ public class GameOneTest {
 				"1 NVRVD => 8 CXFTF\n" + 
 				"1 VJHF, 6 MNCFX => 4 RFSQX\n" + 
 				"176 ORE => 6 VJHF";
-		long resultatAttendu = 180697;
+		long resultatAttendu = 5586022;
 		executerEtVerifierResultat(casTest, resultatAttendu);
 	}
 
@@ -101,7 +74,7 @@ public class GameOneTest {
 				"121 ORE => 7 VRPVC\n" + 
 				"7 XCVML => 6 RJRHP\n" + 
 				"5 BHXH, 4 VRPVC => 5 LTCX";
-		long resultatAttendu = 2210736;
+		long resultatAttendu = 460664;
 		executerEtVerifierResultat(casTest, resultatAttendu);
 	}
 
@@ -109,13 +82,13 @@ public class GameOneTest {
 
 	private void executerEtVerifierResultat(String casTest, long resultatAttendu) {
 		Assert.assertEquals(new Long(resultatAttendu), 
-							gameOne.play(Arrays.stream(casTest.split("\n")).map(Formule::toFormule).collect(Collectors.toList())) );
+							gameTwo.play(Arrays.stream(casTest.split("\n")).map(Formule::toFormule).collect(Collectors.toList())) );
 	}
 	
 
 
 	@Test
 	public void testGame() {
-		Assert.assertEquals(new Long(502491), gameOne.play());
+		Assert.assertEquals(new Long(2944565L), gameTwo.play());
 	}
 }

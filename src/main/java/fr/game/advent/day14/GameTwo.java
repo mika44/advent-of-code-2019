@@ -8,15 +8,17 @@ import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 import fr.game.utils.LoggerUtils;
 
-public class GameOne extends AbstractGame<Formule, Long> {
+public class GameTwo extends AbstractGame<Formule, Long> {
 	
+	private static final long MAX_ORE = 1_000_000_000_000L;
+
 	private static final String INPUT_FILENAME = "day14/input-day14-1";
 
 	private Logger log;
 	private List<Formule> formules;
 	
 	
-	public GameOne() {
+	public GameTwo() {
 		super(FileUtils::getListFromFile, INPUT_FILENAME, Formule::toFormule);
 		log = LoggerUtils.getLogger();
 	}
@@ -26,9 +28,24 @@ public class GameOne extends AbstractGame<Formule, Long> {
 	@Override
 	public Long play(List<Formule> formules) {
 		this.formules = formules;
-		Formule formuleOre = determinerFormuleOre(new ComposantFormule("FUEL", 1));
-		log.info("Formule de base obtenue : " + formuleOre);
-		return formuleOre.getComposants().get(0).getQuantite();
+		Formule formuleOrePourUnFuel = determinerFormuleOre(new ComposantFormule("FUEL", 1));
+		log.info("Formule obtenue pour 1 Fuel : " + formuleOrePourUnFuel);
+		long orePourUnFuel = formuleOrePourUnFuel.getComposants().get(0).getQuantite();
+		
+		long minQuantiteFuel = MAX_ORE / orePourUnFuel - 1;
+		long maxQuantiteFuel = 2 * minQuantiteFuel;
+		long oreNecessaire = MAX_ORE + 1;
+		do {
+			long quantiteFuel = (minQuantiteFuel + maxQuantiteFuel) / 2;
+			oreNecessaire = determinerFormuleOre(new ComposantFormule("FUEL", quantiteFuel)).getComposants().get(0).getQuantite();
+			log.warning(String.format("Essai production %,d FUEL -> besoin de %,d ORE - min = %,d - max = %,d", quantiteFuel, oreNecessaire, minQuantiteFuel, maxQuantiteFuel));
+			if (oreNecessaire < MAX_ORE) {
+				minQuantiteFuel = quantiteFuel;
+			} else {
+				maxQuantiteFuel = quantiteFuel;
+			}
+		} while (maxQuantiteFuel - minQuantiteFuel > 1);
+		return minQuantiteFuel;
 	}
 	
 	private Optional<Formule> trouverFormuleProduisantElement(ComposantFormule composant) {
@@ -47,6 +64,8 @@ public class GameOne extends AbstractGame<Formule, Long> {
 	private Formule determinerFormuleOre(ComposantFormule produit) {
 		Formule formuleCourante = new Formule(trouverFormuleProduisantElement(produit).get());
 		log.info("produit = " + produit + " - formule = " + formuleCourante);
+		ajusterQuantite(formuleCourante, produit.getQuantite());
+		log.info("produit = " + produit + " - formule après ajustement = " + formuleCourante);
 		boolean isMaxLevelZero = false;
 		while (!isMaxLevelZero) {
 			final int maxLevel = formuleCourante.getComposants().stream().mapToInt(this::getNiveau).max().getAsInt(); 

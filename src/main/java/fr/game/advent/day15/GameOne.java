@@ -87,22 +87,30 @@ public class GameOne extends AbstractGame<Long, Long> {
 
 	private void treatResponseRepairDroid() {
 		StatusCode statusCodeReturned = StatusCode.toStatusCode(readMessageFromRepairDroid().get(0));
-		long xCible = positionRepairDroid.getX() + currentMovementCommand.getMove().getX();
-		long yCible = positionRepairDroid.getY() + currentMovementCommand.getMove().getY();
+		Point cible = getCible(currentMovementCommand);
 		if (!statusCodeReturned.equals(StatusCode.HIT_A_WALL)) {
-			positionRepairDroid.setX(xCible);
-			positionRepairDroid.setY(yCible);
+			positionRepairDroid.setX(cible.getX());
+			positionRepairDroid.setY(cible.getY());
 		}
 		currentMovementResult = statusCodeReturned.getPointStatus();
-		System.out.println("Point analysed : " + new Point(xCible, yCible) + " -> " + currentMovementResult);
-		space.put(new Point(xCible, yCible), currentMovementResult);
+		System.out.println("Point analysed : " + cible + " -> " + currentMovementResult);
+		space.put(cible, currentMovementResult);
+	}
+
+
+	private Point getCible(MovementCommand movementCommand) {
+		return new Point(positionRepairDroid.getX() + movementCommand.getMove().getX(), positionRepairDroid.getY() + movementCommand.getMove().getY());
 	}
 
 
 	private MovementCommand nextMove() {
 		if (currentMovementCommand == null) return MovementCommand.NORTH;
 		if (currentMovementResult.equals(PointStatus.VOID)) return currentMovementCommand;
-		return MovementCommand.turnToLeft(currentMovementCommand);
+		MovementCommand newMovementCommand = MovementCommand.turnToLeft(currentMovementCommand);
+		Point cible = getCible(newMovementCommand);
+		PointStatus statusCible = space.getOrDefault(cible, PointStatus.UNKNOWN);
+		if (PointStatus.UNKNOWN.equals(statusCible) || PointStatus.VOID.equals(statusCible)) return newMovementCommand;
+		return MovementCommand.turnToLeft(newMovementCommand);
 	}
 
 	

@@ -42,7 +42,8 @@ public class GameOne extends AbstractGame<Long, Long> {
 	private Long minY, maxY;
 	private Point positionRepairDroid;
 	private MovementCommand lastMovementCommand;
-	private PointStatus lastMovementResult;
+	private MovementCommand currentMovementCommand;
+	private PointStatus currentMovementResult;
 	
 	@Override
 	public Long play(List<Long> intcodeProgram) {
@@ -53,13 +54,14 @@ public class GameOne extends AbstractGame<Long, Long> {
 		
 			// loop until end of search
 			positionRepairDroid = new Point(0, 0);
-			space.put(positionRepairDroid, PointStatus.VOID);
+			space.put(new Point(0, 0), PointStatus.VOID);
 			lastMovementCommand = null;
-			lastMovementResult = null;
+			currentMovementCommand = null;
+			currentMovementResult = null;
 			boolean endOfSearch = false;
 			while (!endOfSearch) {
-				lastMovementCommand = nextMove();
-				sendMessageToRepairDroid(lastMovementCommand);
+				currentMovementCommand = nextMove();
+				sendMessageToRepairDroid(currentMovementCommand);
 				treatResponseRepairDroid();
 				printSpace();
 				endOfSearch = !repairDroid.isAlive();
@@ -85,22 +87,22 @@ public class GameOne extends AbstractGame<Long, Long> {
 
 	private void treatResponseRepairDroid() {
 		StatusCode statusCodeReturned = StatusCode.toStatusCode(readMessageFromRepairDroid().get(0));
-		long xCible = positionRepairDroid.getX() + lastMovementCommand.getMove().getX();
-		long yCible = positionRepairDroid.getY() + lastMovementCommand.getMove().getY();
+		long xCible = positionRepairDroid.getX() + currentMovementCommand.getMove().getX();
+		long yCible = positionRepairDroid.getY() + currentMovementCommand.getMove().getY();
 		if (!statusCodeReturned.equals(StatusCode.HIT_A_WALL)) {
 			positionRepairDroid.setX(xCible);
 			positionRepairDroid.setY(yCible);
 		}
-		lastMovementResult = statusCodeReturned.getPointStatus();
-		System.out.println("Point analysed : " + new Point(xCible, yCible) + " -> " + lastMovementResult);
-		space.put(new Point(xCible, yCible), lastMovementResult);
+		currentMovementResult = statusCodeReturned.getPointStatus();
+		System.out.println("Point analysed : " + new Point(xCible, yCible) + " -> " + currentMovementResult);
+		space.put(new Point(xCible, yCible), currentMovementResult);
 	}
 
 
 	private MovementCommand nextMove() {
-		if (lastMovementCommand == null) return MovementCommand.NORTH;
-		if (lastMovementResult.equals(PointStatus.VOID)) return lastMovementCommand;
-		return MovementCommand.turnToLeft(lastMovementCommand);
+		if (currentMovementCommand == null) return MovementCommand.NORTH;
+		if (currentMovementResult.equals(PointStatus.VOID)) return currentMovementCommand;
+		return MovementCommand.turnToLeft(currentMovementCommand);
 	}
 
 	
@@ -117,7 +119,7 @@ public class GameOne extends AbstractGame<Long, Long> {
 		System.out.println();
 		System.out.println("------------------");
 		System.out.println(String.format("min = (%d, %d) - max = (%d, %d)", minX, minY, maxX, maxY));
-		System.out.println(String.format("last move = (%s) - last status = (%s)", lastMovementCommand, lastMovementResult));
+		System.out.println(String.format("last move = (%s) - last status = (%s)", currentMovementCommand, currentMovementResult));
 		for (long y = maxY + 1; y >= minY - 1; y--) {
 			for (long x = minX - 1; x <= maxX + 1; x++) {
 				Point currentPoint = new Point(x, y);

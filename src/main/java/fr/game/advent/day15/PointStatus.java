@@ -4,7 +4,7 @@ public enum PointStatus {
 	VOID	("."),
 	WALL	("#"),
 	OS		("O"),
-	UNKNOWN ("-")
+	UNKNOWN (" ")
 	;
 	
 	private String printStatus;

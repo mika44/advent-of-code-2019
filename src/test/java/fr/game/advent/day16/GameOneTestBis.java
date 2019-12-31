@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import fr.game.utils.LoggerUtils;
 
-public class GameOneTest {
+public class GameOneTestBis {
 	
-	private GameOne gameOne = new GameOne();
+	private GameTwo gameOne = new GameTwo();
 	
 	@BeforeClass
 	public static void initLog() {

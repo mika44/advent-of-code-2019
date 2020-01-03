@@ -17,11 +17,12 @@ public class LoggerUtils {
 		consoleHandler = new ConsoleHandler();
 		consoleHandler.setLevel(Level.WARNING);
 		consoleHandler.setFormatter(new SimpleFormatter() {
-	          private static final String format = "[%1$s] %5$s %n";
+	          private static final String format = "[%1$tF %1$tT] [%2$s] %6$s %n";
 
 	          @Override
 	          public synchronized String format(LogRecord lr) {
 	              return String.format(format,
+	            		  lr.getMillis(),
 	            		  lr.getLoggerName(),
 	            		  lr.getSourceClassName(),
 	            		  lr.getSourceMethodName(),

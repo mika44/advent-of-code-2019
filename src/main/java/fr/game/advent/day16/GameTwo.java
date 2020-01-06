@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import org.apache.logging.log4j.util.IndexedReadOnlyStringMap;
+
 import fr.game.utils.AbstractGame;
 import fr.game.utils.FileUtils;
 import fr.game.utils.LoggerUtils;
@@ -28,6 +30,7 @@ public class GameTwo extends AbstractGame<String, String> {
 
 	private long[][] necessaryIndex;
 	private int[] necessaryIndexNumberPerPhase;
+	private int[][] indexPhase;
 	private int[] lastIndexCalled;
 	
 	private int[][] results;
@@ -56,14 +59,32 @@ public class GameTwo extends AbstractGame<String, String> {
 		lastIndexCalled = new int[phaseNumberToReach + 1];
 
 		log.warning("début marquage");
+		indexPhase = new int[phaseNumberToReach +1][];
+		indexPhase[phaseNumberToReach] = new int[RESULT_SIZE];
 		int index = 0;
 		while (index < RESULT_SIZE) {
 			calculAndMarkNecessaryIndex(phaseNumberToReach, numberOfDigitsToSkip + index);
 			setNecessary(phaseNumberToReach, numberOfDigitsToSkip + index);
+			indexPhase[phaseNumberToReach][index] = numberOfDigitsToSkip + index;
 			index++;
 		}
-		for (int i = 0; i < necessaryIndexNumberPerPhase.length; i++) {
-			log.warning("- phase " + i + " -> " + necessaryIndexNumberPerPhase[i] + " index marqués sur " + indexMax);
+		log.warning("phases < " + phaseNumberToReach + " -> " + necessaryIndexNumberPerPhase[99] + " index marqués sur " + indexMax);
+		log.warning("fin marquage  - report resultat marquage");
+
+		indexPhase[99] = new int[necessaryIndexNumberPerPhase[99]];
+		int iCorrige = 0;
+		for (int indexReel = 0; indexReel < indexMax; indexReel++) {
+			if (isNecessary(99, indexReel)) {
+				indexPhase[99][iCorrige] = indexReel;
+				if (indexReel == 303673) log.warning("fin marquage  - report resultat marquage iCorrige = " + iCorrige + " indexReel = " + indexReel);
+				iCorrige++;
+			}
+		}
+		
+		for (int i = 0; i < 99; i++) {
+			necessaryIndexNumberPerPhase[i] = necessaryIndexNumberPerPhase[99];
+			necessaryIndex[i] = necessaryIndex[99];
+			indexPhase[i] = indexPhase[99];
 		}
 
 		results = new int[phaseNumberToReach + 1][];
@@ -117,26 +138,21 @@ public class GameTwo extends AbstractGame<String, String> {
 		if (lastIndex == index - 1) {
 			lastIndexCorrige++;
 		} else {
-			lastIndexCorrige = positionInResults(phaseNumber, index);
+			lastIndexCorrige = positionInResults(phaseNumber, index, lastIndexCorrige);
 		}
 		lastIndex = index;
 		return lastResult[lastIndexCorrige];
 	}
 
-	private int positionInResults(int phaseNumber, int index) {
-		int indexInResults = 0;
-		int indexInNecessaryIndex = positionInNecessaryIndex(index);
-		long allBitsBeforBitInItemOfNecessaryIndex = 2 * valueBitInItemOfNecessaryIndex(index) - 1L;
-		long[] currentNecessaryIndex = necessaryIndex[phaseNumber - 1];
-		indexInResults += Long.bitCount(currentNecessaryIndex[indexInNecessaryIndex] & allBitsBeforBitInItemOfNecessaryIndex);
-		indexInNecessaryIndex--;
-		while (indexInNecessaryIndex >= 0) {
-			int delta = Long.bitCount(currentNecessaryIndex[indexInNecessaryIndex]);
-			indexInResults += delta;
-			indexInNecessaryIndex--;
+	private int positionInResults(int phaseNumber, int index, int lastIndexCorrige) {
+		int[] indexDeLaPhase = indexPhase[phaseNumber];
+		int indexCorrige = lastIndexCorrige;
+		if (indexCorrige < 0) indexCorrige++;
+		if (indexDeLaPhase[indexCorrige] > index) {
+			indexCorrige = 0;
 		}
-		indexInResults--;
-		return indexInResults;
+		while (indexDeLaPhase[indexCorrige] < index) indexCorrige++;
+		return indexCorrige;
 	}
 
 	private long valueBitInItemOfNecessaryIndex(int index) {
@@ -151,10 +167,10 @@ public class GameTwo extends AbstractGame<String, String> {
 		return index >>> TWO_POWER;
 	}
 
-
+	long compteur = 0;
 	
 	private void calculAndMarkNecessaryIndex(int phaseNumber, int index) {
-		if (phaseNumber > 0) {
+		if (phaseNumber > 99) {
 			if (lastIndexCalled[phaseNumber] == index - 1 && index > 1) {
 				calculAndMarkNecessaryIndexModeDelta(phaseNumber, index);
 			} else {
@@ -162,6 +178,7 @@ public class GameTwo extends AbstractGame<String, String> {
 			}
 		}
 		necessaryIndexNumberPerPhase[phaseNumber]++;
+		compteur++;
 		lastIndexCalled[phaseNumber] = index;
 	}
 	
@@ -276,12 +293,8 @@ public class GameTwo extends AbstractGame<String, String> {
 	
 
 	private void calculNecessaryIndexPhase(int phaseNumber) {
-		int numberCalculated = 0;
-		for (int index = 0; index < indexMax; index++) {
-			if (isNecessary(phaseNumber, index)) {
-				results[phaseNumber][numberCalculated] = calculNecessaryIndexPhase(phaseNumber, index);
-				numberCalculated++;
-			}
+		for (int index = 0; index < indexPhase[phaseNumber].length; index++) {
+			results[phaseNumber][index] = calculNecessaryIndexPhase(phaseNumber, indexPhase[phaseNumber][index]);
 		}
 	}
 
@@ -321,89 +334,89 @@ public class GameTwo extends AbstractGame<String, String> {
 		return sum;
 	}
 
-//	private void calculNecessaryIndexPhaseBis(int phaseNumber) {
-//		int indexResultatCorrige = 0;
-//		int indexResultat = 0;
-//		for (int index = 0; index < necessaryIndex[phaseNumber].length; index++) {
-//			long indicateur = necessaryIndex[phaseNumber][index];
-//			if (indicateur != 0) {
-//				indexResultatCorrige = calculNecessaryIndexPhase(phaseNumber, indexResultat, necessaryIndex[phaseNumber][index], indexResultatCorrige);
-//			}
-//			indexResultat += POWER_OF_TWO;
-//		}
-//	}
-//
-//	private int calculNecessaryIndexPhase(int phaseNumber, int indexResultat, long indicateur, int numberCalculated) {
-//		boolean[] necessary = new boolean[(int) POWER_OF_TWO];
-//		long bit = 1L;
-//		for (int i = 0; i < necessary.length; i++) {
-//			necessary[i] = (indicateur & bit) != 0;
-//		}
-//
-//		int[] indexPattern = new int[(int) POWER_OF_TWO];
-//		int[] pattern = new int[(int) POWER_OF_TWO];
-//		Arrays.fill(indexPattern, 0);
-//		Arrays.fill(pattern, BASE_PATTERN[0]);
-//		
-//		int[] countdownIndexPattern = new int[(int) POWER_OF_TWO];
-//		for (int i = 0; i < countdownIndexPattern.length; i++) {
-//			countdownIndexPattern[i] = indexResultat + i - 1;
-//		}
-//		
-//		int[] temporarySum = new int[(int) POWER_OF_TWO];
-//
-//		int indexResultatCorrigeSource = 0;
-//		for (int indexSource = 0; indexSource < necessaryIndex[phaseNumber - 1].length; indexSource++) {
-//			long indicateurSource = necessaryIndex[phaseNumber - 1][indexSource];
-//			if (indicateurSource != 0) {
-//				indexResultatCorrigeSource = calculNecessaryIndexPhase(indexResultat, necessary, indexPattern, pattern, countdownIndexPattern, temporarySum, indicateurSource, indexResultatCorrigeSource, results[phaseNumber - 1]);
-//			}
-//		}
-//
-//		for (int i = 0; i < temporarySum.length; i++) {
-//			if (necessary[i]) {
-//				results[phaseNumber][numberCalculated] = temporarySum[i];
-//				numberCalculated++;
-//			}
-//		}
-//
-//		return numberCalculated;
-//	}
-//
-//	private int calculNecessaryIndexPhase(int indexResultat, boolean[] indicateurCible, int[] indexPattern, int[] pattern, int[] countdownIndexPattern, int[] temporarySum, long indicateur, int indexResultatCorrigeSource, int[] source) {
-//		boolean[] indicateurSource = new boolean[(int) POWER_OF_TWO];
-//		long bit = 1L;
-//		for (int i = 0; i < indicateurSource.length; i++) {
-//			indicateurSource[i] = (indicateur & bit) != 0;
-//		}
-//
-//		for (int i = 0; i < indicateurSource.length; i++) {
-//			if (indicateurSource[i]) {
-//				int valueSource = source[indexResultatCorrigeSource];
-//				for (int j = 0; j < indicateurCible.length; j++) {
-//					if (indicateurCible[j]) {
-//						temporarySum[j] = temporarySum[j] + valueSource * pattern[j];
-//						countdownIndexPattern[j]--;
-//						if (countdownIndexPattern[j] == 0) {
-//							countdownIndexPattern[j] = indexResultat + j;
-//							indexPattern[j]++;
-//							pattern[j] = BASE_PATTERN[indexPattern[j] % BASE_PATTERN.length];
-//						}
-//					}
-//				}
-//				indexResultatCorrigeSource++;
-//			}
-//		}
-//		
-//		for (int j = 0; j < indicateurCible.length; j++) {
-//			if (indicateurCible[j]) {
-//				temporarySum[j] = temporarySum[j] % 10;
-//				if (temporarySum[j] < 0) temporarySum[j] = - temporarySum[j];
-//			}
-//		}
-//		
-//		return indexResultatCorrigeSource;
-//	}
+	private void calculNecessaryIndexPhaseBis(int phaseNumber) {
+		int indexResultatCorrige = 0;
+		int indexResultat = 0;
+		for (int index = 0; index < necessaryIndex[phaseNumber].length; index++) {
+			long indicateur = necessaryIndex[phaseNumber][index];
+			if (indicateur != 0) {
+				indexResultatCorrige = calculNecessaryIndexPhase(phaseNumber, indexResultat, necessaryIndex[phaseNumber][index], indexResultatCorrige);
+			}
+			indexResultat += POWER_OF_TWO;
+		}
+	}
+
+	private int calculNecessaryIndexPhase(int phaseNumber, int indexResultat, long indicateur, int numberCalculated) {
+		boolean[] necessary = new boolean[(int) POWER_OF_TWO];
+		long bit = 1L;
+		for (int i = 0; i < necessary.length; i++) {
+			necessary[i] = (indicateur & bit) != 0;
+		}
+
+		int[] indexPattern = new int[(int) POWER_OF_TWO];
+		int[] pattern = new int[(int) POWER_OF_TWO];
+		Arrays.fill(indexPattern, 0);
+		Arrays.fill(pattern, BASE_PATTERN[0]);
+		
+		int[] countdownIndexPattern = new int[(int) POWER_OF_TWO];
+		for (int i = 0; i < countdownIndexPattern.length; i++) {
+			countdownIndexPattern[i] = indexResultat + i - 1;
+		}
+		
+		int[] temporarySum = new int[(int) POWER_OF_TWO];
+
+		int indexResultatCorrigeSource = 0;
+		for (int indexSource = 0; indexSource < necessaryIndex[phaseNumber - 1].length; indexSource++) {
+			long indicateurSource = necessaryIndex[phaseNumber - 1][indexSource];
+			if (indicateurSource != 0) {
+				indexResultatCorrigeSource = calculNecessaryIndexPhase(indexResultat, necessary, indexPattern, pattern, countdownIndexPattern, temporarySum, indicateurSource, indexResultatCorrigeSource, results[phaseNumber - 1]);
+			}
+		}
+
+		for (int i = 0; i < temporarySum.length; i++) {
+			if (necessary[i]) {
+				results[phaseNumber][numberCalculated] = temporarySum[i];
+				numberCalculated++;
+			}
+		}
+
+		return numberCalculated;
+	}
+
+	private int calculNecessaryIndexPhase(int indexResultat, boolean[] indicateurCible, int[] indexPattern, int[] pattern, int[] countdownIndexPattern, int[] temporarySum, long indicateur, int indexResultatCorrigeSource, int[] source) {
+		boolean[] indicateurSource = new boolean[(int) POWER_OF_TWO];
+		long bit = 1L;
+		for (int i = 0; i < indicateurSource.length; i++) {
+			indicateurSource[i] = (indicateur & bit) != 0;
+		}
+
+		for (int i = 0; i < indicateurSource.length; i++) {
+			if (indicateurSource[i]) {
+				int valueSource = source[indexResultatCorrigeSource];
+				for (int j = 0; j < indicateurCible.length; j++) {
+					if (indicateurCible[j]) {
+						temporarySum[j] = temporarySum[j] + valueSource * pattern[j];
+						countdownIndexPattern[j]--;
+						if (countdownIndexPattern[j] == 0) {
+							countdownIndexPattern[j] = indexResultat + j;
+							indexPattern[j]++;
+							pattern[j] = BASE_PATTERN[indexPattern[j] % BASE_PATTERN.length];
+						}
+					}
+				}
+				indexResultatCorrigeSource++;
+			}
+		}
+		
+		for (int j = 0; j < indicateurCible.length; j++) {
+			if (indicateurCible[j]) {
+				temporarySum[j] = temporarySum[j] % 10;
+				if (temporarySum[j] < 0) temporarySum[j] = - temporarySum[j];
+			}
+		}
+		
+		return indexResultatCorrigeSource;
+	}
 
 }
 
